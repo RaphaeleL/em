@@ -1,0 +1,68 @@
+MicroEmacs
+----------
+
+This is an experimental reimplementation of a terminal-based editor
+inspired by MicroEmacs. It is written in C and uses the ncurses
+library for screen handling.
+
+The purpose of this project is to provide a small, lightweight, and
+fast editor that runs in the terminal, with a structure simple enough
+to be studied and extended. It is not intended to be a full Emacs
+replacement, but rather a compact editor in the same spirit as
+uEmacs of Linus Torvalds.
+
+STATUS
+------
+Currently the editor can open and edit text files in a single buffer.
+Basic cursor movement and simple editing commands are implemented.
+Many features of Emacs or uEmacs are not yet present.
+
+REQUIREMENTS
+------------
+ - A C compiler conforming to ISO C99 (tested with 'cc' and 'gcc').
+ - The ncurses library must be installed.
+
+BUILDING
+--------
+To build the editor, type:
+
+    make
+
+This will produce an executable named 'emacs'.
+
+You can run it with:
+
+    ./em filename
+
+INSTALLATION
+------------
+To install the editor system-wide, run:
+
+    make install
+
+This will copy the 'emacs' executable to /usr/local/bin (or your
+specified BINDIR in the Makefile). You may then run it from any
+terminal prompt:
+
+    em filename
+
+CLEANING
+--------
+To remove object files and the binary:
+
+    make clean
+
+FILES
+-----
+ emacs.c      - main program
+ buffer.c     - buffer management
+ display.c    - screen handling
+ input.c      - keyboard input
+ includes/    - header files
+ Makefile     - build instructions
+ README       - this file
+
+----------------------------------------------------------------------
+This software is provided as-is, with no warranty of any kind.
+----------------------------------------------------------------------
+
