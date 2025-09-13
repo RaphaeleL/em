@@ -30,6 +30,12 @@ void editor_move_cursor_left(EditorState *E);
 void editor_move_cursor_right(EditorState *E);
 void editor_move_cursor_up(EditorState *E);
 void editor_move_cursor_down(EditorState *E);
+void editor_move_cursor_to_beginning_of_line(EditorState *E);
+void editor_move_cursor_to_end_of_line(EditorState *E);
+void editor_move_cursor_forward_word(EditorState *E);
+void editor_move_cursor_backward_word(EditorState *E);
+void editor_scroll_page_down(EditorState *E);
+void editor_scroll_page_up(EditorState *E);
 
 void editor_show_completion_popup(EditorState *E, FileCompletion *fc, int x, int y);
 void editor_hide_completion_popup(EditorState *E);

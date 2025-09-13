@@ -213,6 +213,57 @@ int editor_minibuffer_getline(EditorState *E, const char *prompt, char *out, siz
 
 void editor_process_key(EditorState *E) {
     int c = getch();
+    
+    // Handle meta keys
+    if (c == META('f')) {
+        editor_move_cursor_forward_word(E);
+        return;
+    } else if (c == META('b')) {
+        editor_move_cursor_backward_word(E);
+        return;
+    } else if (c == META('v')) {
+        editor_scroll_page_up(E);
+        return;
+    }
+    
+    // Handle escape sequences (alternative meta key handling)
+    if (c == 27) { // ESC character
+        int c2 = getch();
+        if (c2 == -1) {
+            // Just ESC key, treat as normal
+            return;
+        }
+        if (c2 == 'f') {
+            editor_move_cursor_forward_word(E);
+            return;
+        } else if (c2 == 'b') {
+            editor_move_cursor_backward_word(E);
+            return;
+        } else if (c2 == 'v') {
+            editor_scroll_page_up(E);
+            return;
+        } else if (c2 == 27) {
+            // Double ESC, might be meta key
+            int c3 = getch();
+            if (c3 == 'f') {
+                editor_move_cursor_forward_word(E);
+                return;
+            } else if (c3 == 'b') {
+                editor_move_cursor_backward_word(E);
+                return;
+            } else if (c3 == 'v') {
+                editor_scroll_page_up(E);
+                return;
+            } else if (c3 != -1) {
+                ungetch(c3);
+            }
+        } else {
+            // Unknown escape sequence, put back the second character
+            ungetch(c2);
+            return;
+        }
+    }
+    
     // handle prefix C-x sequences
     if (c == CTRL('x')) {
         int c2 = getch();
@@ -284,6 +335,9 @@ void editor_process_key(EditorState *E) {
         case CTRL('f'): editor_move_cursor_right(E); break;
         case CTRL('p'): editor_move_cursor_up(E); break;
         case CTRL('n'): editor_move_cursor_down(E); break;
+        case CTRL('a'): editor_move_cursor_to_beginning_of_line(E); break;
+        case CTRL('e'): editor_move_cursor_to_end_of_line(E); break;
+        case CTRL('v'): editor_scroll_page_down(E); break;
         case KEY_BACKSPACE:
         case 127:
         case 8:

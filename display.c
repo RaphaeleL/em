@@ -137,6 +137,143 @@ void editor_move_cursor_down(EditorState *E) {
     }
 }
 
+void editor_move_cursor_to_beginning_of_line(EditorState *E) {
+    E->cx = 0;
+    // Adjust horizontal scroll if needed
+    if (E->col_offset > 0) {
+        E->col_offset = 0;
+    }
+}
+
+void editor_move_cursor_to_end_of_line(EditorState *E) {
+    if (E->cy < E->buf->nlines) {
+        E->cx = strlen(E->buf->lines[E->cy]);
+    }
+}
+
+// Helper function to check if a character is a word character
+static int is_word_char(char c) {
+    return isalnum(c) || c == '_';
+}
+
+void editor_move_cursor_forward_word(EditorState *E) {
+    if (E->cy >= E->buf->nlines) return;
+    
+    const char *line = E->buf->lines[E->cy];
+    int line_len = strlen(line);
+    
+    // If we're at the end of the line, move to the beginning of the next line
+    if (E->cx >= line_len) {
+        if (E->cy + 1 < E->buf->nlines) {
+            E->cy++;
+            E->cx = 0;
+            int rows = E->screen_rows - 2;
+            if (E->cy >= E->row_offset + rows) E->row_offset = E->cy - rows + 1;
+        }
+        return;
+    }
+    
+    // Skip current word if we're in the middle of one
+    while (E->cx < line_len && is_word_char(line[E->cx])) {
+        E->cx++;
+    }
+    
+    // Skip whitespace
+    while (E->cx < line_len && !is_word_char(line[E->cx])) {
+        E->cx++;
+    }
+    
+    // If we're still at the end of the line, move to next line
+    if (E->cx >= line_len) {
+        if (E->cy + 1 < E->buf->nlines) {
+            E->cy++;
+            E->cx = 0;
+            int rows = E->screen_rows - 2;
+            if (E->cy >= E->row_offset + rows) E->row_offset = E->cy - rows + 1;
+        }
+    }
+}
+
+void editor_move_cursor_backward_word(EditorState *E) {
+    // If we're at the beginning of the line, move to the end of the previous line
+    if (E->cx == 0) {
+        if (E->cy > 0) {
+            E->cy--;
+            E->cx = strlen(E->buf->lines[E->cy]);
+            if (E->cy < E->row_offset) E->row_offset = E->cy;
+        }
+        return;
+    }
+    
+    if (E->cy >= E->buf->nlines) return;
+    
+    const char *line = E->buf->lines[E->cy];
+    
+    // Move back one character first
+    E->cx--;
+    
+    // Skip whitespace
+    while (E->cx > 0 && !is_word_char(line[E->cx])) {
+        E->cx--;
+    }
+    
+    // Skip current word
+    while (E->cx > 0 && is_word_char(line[E->cx - 1])) {
+        E->cx--;
+    }
+}
+
+void editor_scroll_page_down(EditorState *E) {
+    int rows = E->screen_rows - 2; // exclude status and minibuffer
+    int max_offset = E->buf->nlines - rows;
+    
+    if (max_offset < 0) max_offset = 0;
+    
+    // Scroll down by one page
+    E->row_offset += rows;
+    if (E->row_offset > max_offset) {
+        E->row_offset = max_offset;
+    }
+    
+    // Move cursor to maintain relative position, but don't go beyond buffer
+    E->cy += rows;
+    if (E->cy >= E->buf->nlines) {
+        E->cy = E->buf->nlines - 1;
+    }
+    
+    // Adjust cursor position if it's beyond the line length
+    if (E->cy >= 0 && E->cy < E->buf->nlines) {
+        int line_len = strlen(E->buf->lines[E->cy]);
+        if (E->cx > line_len) {
+            E->cx = line_len;
+        }
+    }
+}
+
+void editor_scroll_page_up(EditorState *E) {
+    int rows = E->screen_rows - 2; // exclude status and minibuffer
+    
+    // Scroll up by one page
+    E->row_offset -= rows;
+    if (E->row_offset < 0) {
+        E->row_offset = 0;
+    }
+    
+    // Move cursor to maintain relative position
+    E->cy -= rows;
+    if (E->cy < 0) {
+        E->cy = 0;
+    }
+    
+    // Adjust cursor position if it's beyond the line length
+    if (E->cy >= 0 && E->cy < E->buf->nlines) {
+        int line_len = strlen(E->buf->lines[E->cy]);
+        if (E->cx > line_len) {
+            E->cx = line_len;
+        }
+    }
+}
+
 // Completion popup implementation
 void editor_show_completion_popup(EditorState *E, FileCompletion *fc, int x, int y) {
     (void)x; // x parameter not used for full-width popup
