@@ -6,6 +6,7 @@ typedef struct {
     int nlines;
     int capacity;
     int modified;
+    int readonly;    // read-only flag
     char *filename;
 } Buffer;
 
@@ -24,6 +25,8 @@ void buffer_insert_line(Buffer *b, int idx, const char *s);
 void buffer_delete_line(Buffer *b, int idx);
 int buffer_load_file(Buffer *b, const char *path);
 int buffer_save_file(Buffer *b, const char *path);
+void buffer_set_readonly(Buffer *b, int readonly);
+int buffer_is_readonly(Buffer *b);
 
 FileCompletion *file_completion_new(void);
 void file_completion_free(FileCompletion *fc);

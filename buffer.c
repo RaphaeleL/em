@@ -27,6 +27,7 @@ Buffer *buffer_new(void) {
     b->nlines = 1;
     b->lines[0] = strdup("");
     b->modified = 0;
+    b->readonly = 0;
     b->filename = NULL;
     return b;
 }
@@ -264,4 +265,14 @@ void file_completion_prev(FileCompletion *fc) {
     if (fc->count > 0) {
         fc->selected = (fc->selected - 1 + fc->count) % fc->count;
     }
+}
+
+void buffer_set_readonly(Buffer *b, int readonly) {
+    if (b) {
+        b->readonly = readonly ? 1 : 0;
+    }
+}
+
+int buffer_is_readonly(Buffer *b) {
+    return b ? b->readonly : 0;
 }

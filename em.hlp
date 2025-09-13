@@ -1,0 +1,124 @@
+EM Text Editor - Help File
+==========================
+
+This is the help file for the EM text editor. Press C-x C-c to exit this help.
+
+BASIC NAVIGATION
+================
+
+Character Movement:
+  Arrow Keys        - Move cursor in all directions
+  C-b (Ctrl+b)      - Move left (backward)
+  C-f (Ctrl+f)      - Move right (forward)
+  C-p (Ctrl+p)      - Move up (previous line)
+  C-n (Ctrl+n)      - Move down (next line)
+
+Line Movement:
+  C-a (Ctrl+a)      - Move to beginning of line
+  C-e (Ctrl+e)      - Move to end of line
+
+Word Movement:
+  M-f (Alt+f)       - Move forward by word
+  M-b (Alt+b)       - Move backward by word
+
+Page Scrolling:
+  C-v (Ctrl+v)      - Scroll down by one page
+  M-v (Alt+v)       - Scroll up by one page
+
+FILE OPERATIONS
+===============
+
+Opening Files:
+  C-x C-f           - Open file (find file)
+  C-s               - Quick save current file
+
+Saving Files:
+  C-x C-s           - Save current file
+  C-s               - Quick save (same as C-x C-s)
+
+Exiting:
+  C-x C-c           - Exit editor (with save prompt if modified)
+
+EDITING
+=======
+
+Basic Editing:
+  Backspace         - Delete character before cursor
+  Enter/Return      - Insert newline and split line
+  Any printable char - Insert character at cursor
+
+COMMAND SYSTEM
+==============
+
+Command Mode:
+  M-x               - Enter command mode
+  M-x help          - Show this help file (read-only)
+  M-x <command>     - Execute command
+
+Available Commands:
+  help              - Show this help file (opens as read-only buffer)
+  (More commands can be added to the system)
+
+Read-Only Buffers:
+  - Help file opens as read-only to prevent accidental modification
+  - Status bar shows "(read-only)" indicator
+  - Editing operations show "Buffer is read-only" message
+  - Navigation and reading work normally
+
+COMPLETION SYSTEM
+=================
+
+File Completion (C-x C-f only):
+  Tab               - Start file completion
+  Arrow Keys        - Navigate completion list
+  Page Up/Down      - Fast navigation in completion
+  Enter             - Select completion
+  C-g               - Cancel completion
+
+Note: Tab completion only works in file operations (C-x C-f), not in command mode (M-x).
+Command mode accepts simple text input without completion.
+
+COMPLETION POPUP
+================
+
+The completion popup shows file suggestions when opening files.
+- Use Up/Down arrows to navigate
+- Use Page Up/Page Down for faster scrolling
+- The popup automatically scrolls when the list is longer than the popup height
+- Press Enter to select the highlighted file
+- Press C-g to cancel
+
+STATUS BAR
+==========
+
+The status bar shows:
+- Current filename (or [NoName] for new files)
+- Modified status
+- Current line number and total lines
+
+MINIBUFFER
+==========
+
+The minibuffer is used for:
+- File operations (open/save)
+- Command input (M-x commands)
+- File completion
+- User prompts
+
+TROUBLESHOOTING
+===============
+
+If meta keys (M-f, M-b, M-v, M-x) don't work:
+- Try Alt+key instead of M-key
+- Try Esc then key
+- Some terminals may not support meta keys properly
+
+If you get stuck:
+- Press C-g to cancel current operation
+- Press C-x C-c to exit (with save prompt)
+- Use M-x help to see this help again
+
+This help file is displayed in the editor, so you can:
+- Scroll through it with C-v and M-v
+
+For more information, see the source code or documentation.

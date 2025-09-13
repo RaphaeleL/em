@@ -21,6 +21,11 @@
 #include "includes/config.h"
 
 void editor_insert_char(EditorState *E, int c) {
+    if (buffer_is_readonly(E->buf)) {
+        editor_message(E, "Buffer is read-only");
+        return;
+    }
+    
     Buffer *b = E->buf;
     char *line = b->lines[E->cy];
     int llen = strlen(line);
@@ -35,6 +40,11 @@ void editor_insert_char(EditorState *E, int c) {
 }
 
 void editor_backspace(EditorState *E) {
+    if (buffer_is_readonly(E->buf)) {
+        editor_message(E, "Buffer is read-only");
+        return;
+    }
+    
     Buffer *b = E->buf;
     if (E->cx > 0) {
         char *line = b->lines[E->cy];
@@ -62,6 +72,11 @@ void editor_backspace(EditorState *E) {
 }
 
 void editor_enter(EditorState *E) {
+    if (buffer_is_readonly(E->buf)) {
+        editor_message(E, "Buffer is read-only");
+        return;
+    }
+    
     Buffer *b = E->buf;
     char *line = b->lines[E->cy];
     // split at cursor
@@ -79,8 +94,8 @@ void editor_enter(EditorState *E) {
     if (E->cy >= E->row_offset + rows) E->row_offset = E->cy - rows + 1;
 }
 
-// minibuffer GET LINE: returns 0 on success, -1 on cancel
-int editor_minibuffer_getline(EditorState *E, const char *prompt, char *out, size_t outcap) {
+// minibuffer GET LINE with completion: returns 0 on success, -1 on cancel
+int editor_minibuffer_getline_with_completion(EditorState *E, const char *prompt, char *out, size_t outcap) {
     E->minibuf[0] = '\0';
     int pos = 0;
     int done = 0;
@@ -211,6 +226,72 @@ int editor_minibuffer_getline(EditorState *E, const char *prompt, char *out, siz
     return canceled ? -1 : 0;
 }
 
+// Simple minibuffer GET LINE without completion: returns 0 on success, -1 on cancel
+int editor_minibuffer_getline(EditorState *E, const char *prompt, char *out, size_t outcap) {
+    E->minibuf[0] = '\0';
+    int pos = 0;
+    int done = 0;
+    int canceled = 0;
+    
+    while (!done) {
+        // show prompt + current input
+        snprintf(E->minibuf, sizeof(E->minibuf), "%s%s", prompt, out);
+        editor_draw(E, NULL);
+        int ch = getch();
+        if (ch == '\n' || ch == '\r') {
+            done = 1;
+        } else if (ch == KEY_BACKSPACE || ch == 127 || ch == 8) {
+            if (pos > 0) {
+                pos--;
+                out[pos] = '\0';
+            }
+        } else if (ch == CTRL('g')) {
+            canceled = 1;
+            break;
+        } else if (isprint(ch)) {
+            if (pos + 1 < (int)outcap) {
+                out[pos++] = (char)ch;
+                out[pos] = '\0';
+            }
+        }
+    }
+    E->minibuf[0] = '\0';
+    return canceled ? -1 : 0;
+}
+
+// Command system implementation
+void editor_command_mode(EditorState *E) {
+    char command[256] = "";
+    if (editor_minibuffer_getline(E, "M-x ", command, sizeof(command)) == 0) {
+        editor_execute_command(E, command);
+    }
+}
+
+void editor_execute_command(EditorState *E, const char *command) {
+    if (strcmp(command, "help") == 0) {
+        editor_show_help(E);
+    } else {
+        editor_message(E, "Unknown command: %s", command);
+    }
+}
+
+void editor_show_help(EditorState *E) {
+    // Try to load the help file
+    if (buffer_load_file(E->buf, "em.hlp") == 0) {
+        // Set buffer as read-only
+        buffer_set_readonly(E->buf, 1);
+        E->cx = E->cy = E->row_offset = 0;
+        editor_message(E, "Help loaded (read-only). Press C-x C-c to exit help.");
+    } else {
+        // Fallback to message if help file not found
+        editor_message(E, "Help file 'em.hlp' not found. Available commands:");
+        editor_message(E, "  help - Show this help message");
+        editor_message(E, "  Navigation: Arrow keys, C-b/f/p/n, C-a/e, M-f/b, C-v/M-v");
+        editor_message(E, "  File ops: C-x C-f (open), C-x C-s (save), C-s (quick save)");
+        editor_message(E, "  Exit: C-x C-c");
+    }
+}
+
 void editor_process_key(EditorState *E) {
     int c = getch();
     
@@ -242,6 +323,9 @@ void editor_process_key(EditorState *E) {
         } else if (c2 == 'v') {
             editor_scroll_page_up(E);
             return;
+        } else if (c2 == 'x') {
+            editor_command_mode(E);
+            return;
         } else if (c2 == 27) {
             // Double ESC, might be meta key
             int c3 = getch();
@@ -254,6 +338,9 @@ void editor_process_key(EditorState *E) {
             } else if (c3 == 'v') {
                 editor_scroll_page_up(E);
                 return;
+            } else if (c3 == 'x') {
+                editor_command_mode(E);
+                return;
             } else if (c3 != -1) {
                 ungetch(c3);
             }
@@ -262,6 +349,12 @@ void editor_process_key(EditorState *E) {
             ungetch(c2);
             return;
         }
+    }
+    
+    // Handle M-x command mode
+    if (c == META('x')) {
+        editor_command_mode(E);
+        return;
     }
     
     // handle prefix C-x sequences
@@ -288,7 +381,7 @@ void editor_process_key(EditorState *E) {
             }
         } else if (c2 == CTRL('f')) { // find / open
             char fname[256] = "";
-            if (editor_minibuffer_getline(E, "Open file: ", fname, sizeof(fname)) == 0) {
+            if (editor_minibuffer_getline_with_completion(E, "Open file: ", fname, sizeof(fname)) == 0) {
                 if (buffer_load_file(E->buf, fname) == 0) {
                     E->cx = E->cy = E->row_offset = 0;
                     editor_message(E, "Opened '%s'", fname);

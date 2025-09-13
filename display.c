@@ -43,9 +43,11 @@ void editor_draw(EditorState *E, const char *message) {
     // status line
     attron(A_REVERSE);
     char status[512];
-    snprintf(status, sizeof(status), " %s %s | %d/%d ",
+    const char *readonly_str = buffer_is_readonly(E->buf) ? " (read-only)" : "";
+    snprintf(status, sizeof(status), " %s %s%s | %d/%d ",
              E->buf->filename ? E->buf->filename : "[NoName]",
              E->buf->modified ? "(modified)" : "",
+             readonly_str,
              E->cy + 1, E->buf->nlines);
     mvaddnstr(rows, 0, status, cols);
     // rest of pad
