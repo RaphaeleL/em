@@ -35,6 +35,8 @@ int main(int argc, char **argv) {
     E.cx = E.cy = 0;
     E.row_offset = 0;
     E.col_offset = 0;
+    E.popup_visible = 0;
+    E.completion = NULL;
     editor_update_screen_size(&E);
 
     if (argc >= 2) {
