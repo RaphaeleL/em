@@ -121,11 +121,6 @@ int editor_minibuffer_getline_with_completion(EditorState *E, const char *prompt
                         pos = strlen(out);
                         // Reset completion to show contents of this directory
                         file_completion_find_matches(fc, out);
-                        if (fc->count > 0) {
-                            editor_show_completion_popup(E, fc, 0, E->screen_rows - 1);
-                        } else {
-                            editor_hide_completion_popup(E);
-                        }
                         continue; // Don't exit, continue the completion process
                     }
                 }
@@ -138,8 +133,6 @@ int editor_minibuffer_getline_with_completion(EditorState *E, const char *prompt
                 file_completion_find_matches(fc, out);
                 if (fc->count > 0) {
                     completion_active = 1;
-                    // Show popup below minibuffer
-                    editor_show_completion_popup(E, fc, 0, E->screen_rows - 1);
                     char *selected = file_completion_get_selected(fc);
                     if (selected) {
                         strncpy(out, selected, outcap - 1);
@@ -157,56 +150,11 @@ int editor_minibuffer_getline_with_completion(EditorState *E, const char *prompt
                     pos = strlen(out);
                 }
             }
-        } else if (ch == KEY_UP) {
-            // Navigate up in completion popup
-            if (completion_active) {
-                editor_completion_scroll_up(E);
-                char *selected = file_completion_get_selected(fc);
-                if (selected) {
-                    strncpy(out, selected, outcap - 1);
-                    out[outcap - 1] = '\0';
-                    pos = strlen(out);
-                }
-            }
-        } else if (ch == KEY_DOWN) {
-            // Navigate down in completion popup
-            if (completion_active) {
-                editor_completion_scroll_down(E);
-                char *selected = file_completion_get_selected(fc);
-                if (selected) {
-                    strncpy(out, selected, outcap - 1);
-                    out[outcap - 1] = '\0';
-                    pos = strlen(out);
-                }
-            }
-        } else if (ch == KEY_PPAGE) {
-            // Page up in completion popup
-            if (completion_active) {
-                editor_completion_page_up(E);
-                char *selected = file_completion_get_selected(fc);
-                if (selected) {
-                    strncpy(out, selected, outcap - 1);
-                    out[outcap - 1] = '\0';
-                    pos = strlen(out);
-                }
-            }
-        } else if (ch == KEY_NPAGE) {
-            // Page down in completion popup
-            if (completion_active) {
-                editor_completion_page_down(E);
-                char *selected = file_completion_get_selected(fc);
-                if (selected) {
-                    strncpy(out, selected, outcap - 1);
-                    out[outcap - 1] = '\0';
-                    pos = strlen(out);
-                }
-            }
         } else if (ch == KEY_BACKSPACE || ch == 127 || ch == 8) {
             if (pos > 0) {
                 pos--;
                 out[pos] = '\0';
                 completion_active = 0; // Reset completion on backspace
-                editor_hide_completion_popup(E);
             }
         } else if (ch == CTRL('g')) {
             canceled = 1;
@@ -216,12 +164,10 @@ int editor_minibuffer_getline_with_completion(EditorState *E, const char *prompt
                 out[pos++] = (char)ch;
                 out[pos] = '\0';
                 completion_active = 0; // Reset completion on new input
-                editor_hide_completion_popup(E);
             }
         }
     }
     E->minibuf[0] = '\0';
-    editor_hide_completion_popup(E);
     file_completion_free(fc);
     return canceled ? -1 : 0;
 }

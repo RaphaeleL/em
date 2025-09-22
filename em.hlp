@@ -78,14 +78,12 @@ File Completion (C-x C-f only):
 Note: Tab completion only works in file operations (C-x C-f), not in command mode (M-x).
 Command mode accepts simple text input without completion.
 
-COMPLETION POPUP
-================
+TAB COMPLETION
+==============
 
-The completion popup shows file suggestions when opening files.
-- Use Up/Down arrows to navigate
-- Use Page Up/Page Down for faster scrolling
-- The popup automatically scrolls when the list is longer than the popup height
-- Press Enter to select the highlighted file
+Tab completion is available when opening files.
+- Press Tab to cycle through file suggestions
+- Press Enter to select the current completion
 - Press C-g to cancel
 
 STATUS BAR

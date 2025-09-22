@@ -1,10 +1,10 @@
-/* 
+/*
  * emacs.c
  *
  * A reimplementation of Emacs in C using ncurses.
  *
- * Created at:  12. Sep 2025 
- * Author:      Raphaele Salvatore Licciardo 
+ * Created at:  12. Sep 2025
+ * Author:      Raphaele Salvatore Licciardo
  *
  *
  * Copyright (c) 2025 Raphaele Salvatore Licciardo
@@ -35,8 +35,6 @@ int main(int argc, char **argv) {
     E.cx = E.cy = 0;
     E.row_offset = 0;
     E.col_offset = 0;
-    E.popup_visible = 0;
-    E.completion = NULL;
     editor_update_screen_size(&E);
 
     if (argc >= 2) {
@@ -53,8 +51,8 @@ int main(int argc, char **argv) {
     }
 
     while (1) {
-        editor_draw(&E, NULL);
         editor_process_key(&E);
+        editor_draw(&E, NULL);
     }
 
     // cleanup (never reached!)
