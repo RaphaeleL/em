@@ -4,23 +4,17 @@
 #include "./build.h"
 
 Cmd cmd = {0};
-
-
-// ~/Projects/em> ./build 
-// [INFO] cc   -g -O2 -Wall -Wextra -std=c99 -c emacs.c -o emacs.o 
-// [INFO] cc   -g -O2 -Wall -Wextra -std=c99 -c buffer.c -o buffer.o 
-// [INFO] cc   -g -O2 -Wall -Wextra -std=c99 -c display.c -o display.o 
-// [INFO] cc   -g -O2 -Wall -Wextra -std=c99 -c input.c -o input.o 
-// [INFO] cc   -g -O2 -Wall -Wextra -std=c99 -lncurses emacs.o buffer.o display.o input.o -o em 
+Timer timer = {0};
 
 int main() {
     auto_rebuild("build.c");
+    timer_start(&timer);
 
     char *source_files[][2] = {
-        { "emacs.c", "emacs.o" },
-        { "buffer.c", "buffer.o" },
-        { "display.c", "display.o" },
-        { "input.c", "input.o" },
+        { "emacs.c", "out/emacs.o" },
+        { "buffer.c", "out/buffer.o" },
+        { "display.c", "out/display.o" },
+        { "input.c", "out/input.o" },
     };
 
     for (size_t i = 0; i < ARRAY_LEN(source_files); i++) {
@@ -35,8 +29,12 @@ int main() {
     for (size_t i = 0; i < ARRAY_LEN(source_files); i++) {
         push(&cmd, source_files[i][1]);
     }
-    push(&cmd, "-o", "em");
-    if (!run_always(&cmd)) return EXIT_FAILURE;
+    push(&cmd, "-o", "out/bin/em");
+    if (!run(&cmd)) return EXIT_FAILURE;
+
+    double elapsed_ms = timer_elapsed(&timer);
+    timer_reset(&timer);
+    info("Finished in %.3f seconds.\n", elapsed_ms);
 
     return EXIT_SUCCESS;
 }
