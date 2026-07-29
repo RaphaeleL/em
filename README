@@ -26,43 +26,14 @@ BUILDING
 --------
 To build the editor, type:
 
-    make
+    cc -o build build.c && ./build
 
-This will produce an executable named 'emacs'.
+This will produce an executable named 'em'.
 
 You can run it with:
 
     ./em filename
 
-INSTALLATION
-------------
-To install the editor system-wide, run:
-
-    make install
-
-This will copy the 'emacs' executable to /usr/local/bin (or your
-specified BINDIR in the Makefile). You may then run it from any
-terminal prompt:
-
-    em filename
-
-CLEANING
---------
-To remove object files and the binary:
-
-    make clean
-
-FILES
------
- emacs.c      - main program
- buffer.c     - buffer management
- display.c    - screen handling
- input.c      - keyboard input
- includes/    - header files
- Makefile     - build instructions
- README       - this file
-
 ----------------------------------------------------------------------
 This software is provided as-is, with no warranty of any kind.
 ----------------------------------------------------------------------
-
