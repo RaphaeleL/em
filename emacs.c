@@ -26,28 +26,19 @@ int main(int argc, char **argv) {
     raw();
     noecho();
     keypad(stdscr, TRUE);
+    set_escdelay(50); // make lone ESC presses resolve quickly
     start_color();
     use_default_colors();
 
     EditorState E;
     memset(&E, 0, sizeof(E));
     E.buf = buffer_new();
-    E.cx = E.cy = 0;
-    E.row_offset = 0;
-    E.col_offset = 0;
     editor_update_screen_size(&E);
 
     if (argc >= 2) {
-        if (buffer_load_file(E.buf, argv[1]) != 0) {
-            // create new buffer but set filename
-            free(E.buf->filename);
-            E.buf->filename = strdup(argv[1]);
-            editor_message(&E, "New file: %s", argv[1]);
-        } else {
-            editor_message(&E, "Opened %s", argv[1]);
-        }
+        editor_visit_path(&E, argv[1]);
     } else {
-        editor_message(&E, "Welcome!");
+        editor_message(&E, "Welcome! M-x help for key bindings, C-x C-c to quit.");
     }
 
     while (1) {

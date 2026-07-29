@@ -14,38 +14,95 @@ Character Movement:
   C-n (Ctrl+n)      - Move down (next line)
 
 Line Movement:
-  C-a (Ctrl+a)      - Move to beginning of line
-  C-e (Ctrl+e)      - Move to end of line
+  C-a / Home        - Move to beginning of line
+  C-e / End         - Move to end of line
 
 Word Movement:
   M-f (Alt+f)       - Move forward by word
   M-b (Alt+b)       - Move backward by word
 
+Buffer Movement:
+  M-<               - Move to beginning of buffer
+  M->               - Move to end of buffer
+
 Page Scrolling:
-  C-v (Ctrl+v)      - Scroll down by one page
-  M-v (Alt+v)       - Scroll up by one page
+  C-v / PageDown    - Scroll down by one page
+  M-v / PageUp      - Scroll up by one page
+  C-l               - Recenter view around cursor
+
+SELECTION (MARK AND REGION)
+===========================
+
+  C-Space           - Set mark at cursor (start selecting)
+  C-x C-x           - Exchange point and mark
+  Shift+Left/Right  - Extend selection by character
+  C-g / ESC         - Deactivate mark (cancel selection)
+
+The region between mark and cursor is highlighted on screen.
+
+While a selection is active, typing replaces it, and Backspace,
+Delete, Enter or C-y (yank) remove it first.
+
+KILLING AND YANKING (CUT / COPY / PASTE)
+========================================
+
+  C-w               - Kill (cut) region
+  M-w               - Copy region
+  C-k               - Kill from cursor to end of line
+                      (repeat to also kill the newline and keep appending)
+  C-y               - Yank (paste) last killed text
+
+UNDO
+====
+
+  C-_ or C-/        - Undo last change (repeat to undo more)
+
+SEARCH
+======
+
+  C-s               - Incremental search forward
+                      Type to search, C-s again for next match,
+                      Enter to stop at match, C-g to cancel and return.
+                      Search wraps around the end of the buffer.
+
+EDITING
+=======
+
+  Backspace         - Delete character before cursor
+  C-d / Delete      - Delete character under cursor
+  Enter/Return      - Insert newline and split line
+  Any printable char - Insert character at cursor
 
 FILE OPERATIONS
 ===============
 
 Opening Files:
-  C-x C-f           - Open file (find file)
-  C-s               - Quick save current file
+  C-x C-f           - Open file (find file), with Tab completion
+                      Opening a directory shows it in Dired
+
+DIRED (DIRECTORY LISTING)
+=========================
+
+  C-x C-d / C-x d   - Prompt for a directory and open it in Dired
+                      (prefilled with the current file's directory;
+                      an empty input opens the current directory)
+
+Opening a directory (C-x C-f, C-x C-d or 'em somedir') lists its
+contents in 'ls -al' format: permissions, links, owner, group,
+size, modification time and name (symlinks show their target).
+  Enter / f / e     - Open the file or directory on the current line
+  ^                 - Go to the parent directory
+  g                 - Refresh the listing
+  n / p             - Move down / up
+  C-s               - Search for an entry name
+The listing is read-only; C-x C-f and C-x C-c work as usual.
 
 Saving Files:
-  C-x C-s           - Save current file
-  C-s               - Quick save (same as C-x C-s)
+  C-x C-s           - Save current file (prompts for a name if new,
+                      with Tab completion)
 
 Exiting:
   C-x C-c           - Exit editor (with save prompt if modified)
-
-EDITING
-=======
-
-Basic Editing:
-  Backspace         - Delete character before cursor
-  Enter/Return      - Insert newline and split line
-  Any printable char - Insert character at cursor
 
 COMMAND SYSTEM
 ==============
@@ -53,70 +110,48 @@ COMMAND SYSTEM
 Command Mode:
   M-x               - Enter command mode
   M-x help          - Show this help file (read-only)
-  M-x <command>     - Execute command
-
-Available Commands:
-  help              - Show this help file (opens as read-only buffer)
-  (More commands can be added to the system)
 
 Read-Only Buffers:
   - Help file opens as read-only to prevent accidental modification
-  - Status bar shows "(read-only)" indicator
+  - Status bar shows "RO" indicator
   - Editing operations show "Buffer is read-only" message
   - Navigation and reading work normally
 
-COMPLETION SYSTEM
-=================
+MINIBUFFER
+==========
 
-File Completion (C-x C-f only):
-  Tab               - Start file completion
-  Arrow Keys        - Navigate completion list
-  Page Up/Down      - Fast navigation in completion
-  Enter             - Select completion
-  C-g               - Cancel completion
+All prompts (open, save, M-x, ...) share one line editor:
+  Left/Right, C-b/C-f  - Move within the input
+  C-a / C-e            - Beginning / end of input
+  Backspace, C-d       - Delete before / under cursor
+  C-k                  - Delete to end of input
+  C-u                  - Clear the whole input
+  C-g / ESC            - Cancel the prompt
 
-Note: Tab completion only works in file operations (C-x C-f), not in command mode (M-x).
-Command mode accepts simple text input without completion.
-
-TAB COMPLETION
-==============
-
-Tab completion is available when opening files.
-- Press Tab to cycle through file suggestions
-- Press Enter to select the current completion
-- Press C-g to cancel
+File name completion (C-x C-f and Save as):
+  Tab               - Complete the common prefix, then cycle candidates
+  Shift+Tab         - Cycle backward
+  Enter             - Accept the highlighted candidate
+                      (a directory is entered and its contents listed)
+The candidate list is shown next to the input; "~/" is expanded.
 
 STATUS BAR
 ==========
 
 The status bar shows:
 - Current filename (or [NoName] for new files)
-- Modified status
-- Current line number and total lines
-
-MINIBUFFER
-==========
-
-The minibuffer is used for:
-- File operations (open/save)
-- Command input (M-x commands)
-- File completion
-- User prompts
+- "*" if the buffer is modified, "RO" if read-only
+- "[mark]" while a selection is active
+- Current line and column
 
 TROUBLESHOOTING
 ===============
 
 If meta keys (M-f, M-b, M-v, M-x) don't work:
-- Try Alt+key instead of M-key
-- Try Esc then key
-- Some terminals may not support meta keys properly
+- Try pressing Esc followed by the key
+- On macOS Terminal/iTerm2, enable "Use Option as Meta key"
 
 If you get stuck:
 - Press C-g to cancel current operation
 - Press C-x C-c to exit (with save prompt)
 - Use M-x help to see this help again
-
-This help file is displayed in the editor, so you can:
-- Scroll through it with C-v and M-v
-
-For more information, see the source code or documentation.

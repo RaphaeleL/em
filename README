@@ -13,9 +13,19 @@ uEmacs of Linus Torvalds.
 
 STATUS
 ------
-Currently the editor can open and edit text files in a single buffer.
-Basic cursor movement and simple editing commands are implemented.
-Many features of Emacs or uEmacs are not yet present.
+The editor can open, edit and save text files in a single buffer.
+Implemented features:
+
+ - Cursor movement by character, word, line, page and buffer
+ - Mark and region with on-screen selection highlight (C-Space)
+ - Kill, copy and yank (C-w, M-w, C-k, C-y)
+ - Undo (C-_ / C-/)
+ - Incremental search with wrap-around (C-s)
+ - File open with Tab completion (C-x C-f), save (C-x C-s)
+ - Dired-style directory browser with ls -al details (C-x C-d)
+ - Terminal resize handling
+
+Press M-x help inside the editor for the full list of key bindings.
 
 REQUIREMENTS
 ------------
