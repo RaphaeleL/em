@@ -23,7 +23,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "includes/buffer.h"
+#include "buffer.h"
 
 #define UNDO_MAX_DEPTH 256
 

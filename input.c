@@ -18,8 +18,8 @@
 #include <ctype.h>
 #include <sys/stat.h>
 
-#include "includes/input.h"
-#include "includes/config.h"
+#include "input.h"
+#include "config.h"
 
 // Track the previous command so consecutive self-inserts are grouped
 // into one undo step and consecutive C-k kills append to the kill buffer.

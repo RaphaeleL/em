@@ -16,7 +16,7 @@
 #include <ctype.h>
 #include <stdarg.h>
 
-#include "includes/display.h"
+#include "display.h"
 
 void editor_update_screen_size(EditorState *E) {
     getmaxyx(stdscr, E->screen_rows, E->screen_cols);

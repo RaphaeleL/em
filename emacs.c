@@ -17,9 +17,9 @@
 #include <errno.h>
 #include <ctype.h>
 
-#include "includes/buffer.h"
-#include "includes/display.h"
-#include "includes/input.h"
+#include "buffer.h"
+#include "display.h"
+#include "input.h"
 
 int main(int argc, char **argv) {
     initscr();
